@@ -66,8 +66,16 @@
   const lightbox = document.querySelector('.lightbox');
   if (lightbox) {
     const lightboxImg = lightbox.querySelector('img');
+    const closeButton = lightbox.querySelector('.lightbox-close');
     const galleryItems = [...document.querySelectorAll('.gallery-item')];
     let activeIndex = -1;
+    let lightboxOpener = null;
+
+    // Give the image viewer full dialog semantics for screen readers and
+    // keyboard users while preserving the existing visual treatment.
+    lightbox.setAttribute('role', 'dialog');
+    lightbox.setAttribute('aria-modal', 'true');
+    lightbox.setAttribute('aria-label', 'Image viewer');
 
     const prevButton = document.createElement('button');
     prevButton.type = 'button';
@@ -81,6 +89,8 @@
     nextButton.innerHTML = '&#8250;';
     if (galleryItems.length > 1) lightbox.append(prevButton, nextButton);
 
+    const focusableControls = () => [...lightbox.querySelectorAll('button:not([disabled])')];
+
     const showImage = index => {
       if (!galleryItems.length) return;
       activeIndex = (index + galleryItems.length) % galleryItems.length;
@@ -89,23 +99,43 @@
       lightboxImg.alt = img.alt;
       lightbox.classList.add('open');
       lightbox.setAttribute('aria-hidden', 'false');
+      closeButton?.focus({ preventScroll: true });
     };
     const close = () => {
       lightbox.classList.remove('open');
       lightbox.setAttribute('aria-hidden', 'true');
       lightboxImg.removeAttribute('src');
       activeIndex = -1;
+      const opener = lightboxOpener;
+      lightboxOpener = null;
+      opener?.focus({ preventScroll: true });
     };
-    galleryItems.forEach((item, index) => item.addEventListener('click', () => showImage(index)));
-    lightbox.querySelector('.lightbox-close')?.addEventListener('click', close);
+    galleryItems.forEach((item, index) => item.addEventListener('click', () => {
+      lightboxOpener = item;
+      showImage(index);
+    }));
+    closeButton?.addEventListener('click', close);
     prevButton.addEventListener('click', () => showImage(activeIndex - 1));
     nextButton.addEventListener('click', () => showImage(activeIndex + 1));
     lightbox.addEventListener('click', e => { if (e.target === lightbox) close(); });
     document.addEventListener('keydown', e => {
       if (!lightbox.classList.contains('open')) return;
-      if (e.key === 'Escape') close();
-      if (e.key === 'ArrowLeft') { e.preventDefault(); showImage(activeIndex - 1); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); showImage(activeIndex + 1); }
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); showImage(activeIndex - 1); return; }
+      if (e.key === 'ArrowRight') { e.preventDefault(); showImage(activeIndex + 1); return; }
+      if (e.key === 'Tab') {
+        const controls = focusableControls();
+        if (!controls.length) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     });
   }
 
