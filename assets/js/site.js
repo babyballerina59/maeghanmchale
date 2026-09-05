@@ -141,13 +141,45 @@
 
   const igGrid = document.querySelector('[data-instagram-grid]');
   if (igGrid) {
+    const instagramPositions = {
+      center: '50% 50%',
+      top: '50% 0%',
+      bottom: '50% 100%',
+      left: '0% 50%',
+      right: '100% 50%',
+      'top-left': '0% 0%',
+      'top-right': '100% 0%',
+      'bottom-left': '0% 100%',
+      'bottom-right': '100% 100%'
+    };
+
     fetch('assets/data/instagram.json')
       .then(r => r.ok ? r.json() : Promise.reject())
-      .then(posts => {
-        igGrid.innerHTML = posts.slice(0, 6).map(post => `
-          <a class="instagram-card" href="${post.url}" target="_blank" rel="noreferrer" aria-label="Open Maeghan McHale on Instagram">
-            <img src="${post.image}" alt="${post.alt}" loading="lazy">
-          </a>`).join('');
+      .then(data => {
+        // Backward-compatible with the original top-level array while the CMS
+        // uses an object wrapper so Decap can edit the six-post list safely.
+        const posts = Array.isArray(data) ? data : data.posts;
+        if (!Array.isArray(posts)) return;
+
+        const cards = posts.slice(0, 6).map(post => {
+          const card = document.createElement('a');
+          card.className = 'instagram-card';
+          card.href = post.url;
+          card.target = '_blank';
+          card.rel = 'noreferrer';
+          card.setAttribute('aria-label', 'Open Maeghan McHale on Instagram');
+
+          const image = document.createElement('img');
+          image.src = post.image;
+          image.alt = post.alt || '';
+          image.loading = 'lazy';
+          image.style.objectPosition = instagramPositions[post.position] || instagramPositions.center;
+
+          card.appendChild(image);
+          return card;
+        });
+
+        igGrid.replaceChildren(...cards);
       })
       .catch(() => {});
   }
