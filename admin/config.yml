@@ -1,0 +1,103 @@
+# Maeghan McHale — Curated Instagram CMS
+# Production configuration. GitHub authentication is handled by the
+# Cloudflare OAuth proxy below. Local testing remains available via decap-server.
+
+backend:
+  name: github
+  repo: babyballerina59/maeghanmchale
+  branch: main
+  base_url: https://maeghan-mchale-cms-auth.maeghanmchale.workers.dev
+  auth_endpoint: /auth
+
+# When `npx decap-server` is running locally, Decap writes to the local repo
+# instead of GitHub. This lets us test the editor before enabling live auth.
+local_backend: true
+
+site_url: https://maeghanmchale.com
+display_url: https://maeghanmchale.com
+
+media_folder: "assets/img/instagram"
+public_folder: "assets/img/instagram"
+
+# Uploaded JPEG/PNG/WebP files are re-encoded in the browser before saving.
+# Width is constrained to 1200px while the original aspect ratio is retained.
+# No aspect_ratio is set, so Decap does not physically crop the source image.
+media_processing:
+  enabled: true
+  format:
+    enabled: true
+    default: webp
+  quality: 82
+  strip_metadata: true
+  width: 1200
+  height: null
+
+collections:
+  - label: "Curated Instagram"
+    name: "curated_instagram"
+    description: "Edit the six Instagram posts featured on the homepage. Replace images, paste the Instagram URLs, adjust the square crop position, and drag posts to reorder them."
+    editor:
+      preview: true
+    files:
+      - label: "Homepage Instagram Posts"
+        name: "instagram"
+        file: "assets/data/instagram.json"
+        fields:
+          - label: "Featured Posts"
+            label_singular: "Featured Post"
+            name: "posts"
+            widget: "list"
+            min: 6
+            max: 6
+            allow_add: false
+            allow_remove: false
+            allow_reorder: true
+            collapsed: true
+            minimize_collapsed: false
+            summary: "{{fields.alt}}"
+            hint: "The homepage always shows exactly six posts. Drag these entries to change their order, or open one to replace its image and link."
+            fields:
+              - label: "Instagram Post URL"
+                name: "url"
+                widget: "string"
+                hint: "Paste the full Instagram post or reel URL."
+                pattern: ['^https://(www\.)?instagram\.com/.*$', "Paste a full https://www.instagram.com/... URL"]
+
+              - label: "Image"
+                name: "image"
+                widget: "image"
+                choose_url: false
+                allow_multiple: false
+                media_folder: "/assets/img/instagram"
+                public_folder: "assets/img/instagram"
+                hint: "Upload the representative image. It is automatically converted to WebP, resized to 1200px wide while preserving its aspect ratio, and stripped of metadata. The original image is not cropped."
+                media_processing:
+                  enabled: true
+                  format:
+                    enabled: true
+                    default: webp
+                  quality: 82
+                  strip_metadata: true
+                  width: 1200
+                  height: null
+
+              - label: "Image Description"
+                name: "alt"
+                widget: "string"
+                hint: "Briefly describe what is visible in the image for visitors using screen readers."
+
+              - label: "Image Position"
+                name: "position"
+                widget: "select"
+                default: "center"
+                hint: "Choose which part of the uncropped image stays visible inside the square homepage tile. The preview updates as you change this."
+                options:
+                  - { label: "Center", value: "center" }
+                  - { label: "Top", value: "top" }
+                  - { label: "Bottom", value: "bottom" }
+                  - { label: "Left", value: "left" }
+                  - { label: "Right", value: "right" }
+                  - { label: "Top Left", value: "top-left" }
+                  - { label: "Top Right", value: "top-right" }
+                  - { label: "Bottom Left", value: "bottom-left" }
+                  - { label: "Bottom Right", value: "bottom-right" }
