@@ -47,8 +47,26 @@
 
   function assetUrl(getAsset, path) {
     if (!path) return '';
+
+    // Newly selected files exist only in Decap's in-memory media store until
+    // they are published. getAsset() resolves those to a blob/data URL, which
+    // is exactly what the preview needs.
     const asset = getAsset(path);
-    return asset && typeof asset.toString === 'function' ? asset.toString() : String(asset || path);
+    const resolved = asset && typeof asset.toString === 'function'
+      ? asset.toString()
+      : String(asset || '');
+    if (/^(blob:|data:)/i.test(resolved)) return resolved;
+
+    // Existing gallery JSON predates the dedicated CMS upload folders and
+    // points at assets already served from the site's /assets tree. Resolve
+    // those paths from the site root instead of asking the field-specific
+    // media folder to reinterpret them. This works on both the live site and
+    // localhost.
+    const source = String(path);
+    if (/^\/?assets\//i.test(source)) return `/${source.replace(/^\/+/, '')}`;
+
+    // Fallback for any future asset shape Decap can resolve itself.
+    return resolved || source;
   }
 
   function immutableListToArray(list) {
