@@ -133,7 +133,7 @@ collections:
                 choose_url: false
                 allow_multiple: false
                 media_folder: "/assets/img/choreography-gallery"
-                public_folder: "/assets/img/choreography-gallery"
+                public_folder: "assets/img/choreography-gallery"
                 hint: "Upload a JPG, PNG or WebP. It is automatically converted to WebP, resized to 1200px wide while preserving its aspect ratio, and stripped of metadata. The source image is not physically cropped."
                 media_processing:
                   enabled: true
@@ -190,7 +190,7 @@ collections:
                 choose_url: false
                 allow_multiple: false
                 media_folder: "/assets/img/teaching-gallery"
-                public_folder: "/assets/img/teaching-gallery"
+                public_folder: "assets/img/teaching-gallery"
                 hint: "Upload a JPG, PNG or WebP. It is automatically converted to WebP, resized to 1200px wide while preserving its aspect ratio, and stripped of metadata. The source image is not physically cropped."
                 media_processing:
                   enabled: true
