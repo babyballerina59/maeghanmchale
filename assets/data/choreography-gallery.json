@@ -1,52 +1,52 @@
 {
   "items": [
     {
-      "image": "/assets/img/choreography-gallery/choreo-rehearsal-wide.webp",
+      "image": "assets/img/choreography-gallery/choreo-rehearsal-wide.webp",
       "alt": "Contemporary dancers rehearsing Maeghan McHale choreography",
       "position": "center"
     },
     {
-      "image": "/assets/img/choreography-gallery/performance-duet.webp",
+      "image": "assets/img/choreography-gallery/performance-duet.webp",
       "alt": "Dancers performing a contemporary duet",
       "position": "center"
     },
     {
-      "image": "/assets/img/choreography-gallery/performance-ensemble.webp",
+      "image": "assets/img/choreography-gallery/performance-ensemble.webp",
       "alt": "Contemporary ensemble performing onstage",
       "position": "center"
     },
     {
-      "image": "/assets/img/choreography-gallery/choreo-leaps.webp",
+      "image": "assets/img/choreography-gallery/choreo-leaps.webp",
       "alt": "Dancers performing synchronized leaps",
       "position": "center"
     },
     {
-      "image": "/assets/img/choreography-gallery/performance-kneeling.webp",
+      "image": "assets/img/choreography-gallery/performance-kneeling.webp",
       "alt": "Contemporary ensemble in a low sculptural formation",
       "position": "center"
     },
     {
-      "image": "/assets/img/choreography-gallery/choreo-bw.webp",
+      "image": "assets/img/choreography-gallery/choreo-bw.webp",
       "alt": "Black and white contemporary ensemble rehearsal",
       "position": "center"
     },
     {
-      "image": "/assets/img/choreography-gallery/performance-stage.webp",
+      "image": "assets/img/choreography-gallery/performance-stage.webp",
       "alt": "Contemporary dancers on a Youth America Grand Prix stage",
       "position": "center"
     },
     {
-      "image": "/assets/img/choreography-gallery/performance-blue.webp",
+      "image": "assets/img/choreography-gallery/performance-blue.webp",
       "alt": "Three dancers performing under blue stage light",
       "position": "center"
     },
     {
-      "image": "/assets/img/choreography-gallery/performance-yagp.webp",
+      "image": "assets/img/choreography-gallery/performance-yagp.webp",
       "alt": "Contemporary ensemble performing in black costumes",
       "position": "center"
     },
     {
-      "image": "/assets/img/choreography-gallery/choreo-process.webp",
+      "image": "assets/img/choreography-gallery/choreo-process.webp",
       "alt": "Maeghan McHale speaking with dancers during rehearsal",
       "position": "center"
     }
