@@ -63,8 +63,100 @@
     reveals.forEach(el => el.classList.add('in-view'));
   }
 
-  const lightbox = document.querySelector('.lightbox');
-  if (lightbox) {
+  const imagePositions = {
+    center: '50% 50%',
+    upper: '50% 18%',
+    top: '50% 0%',
+    bottom: '50% 100%',
+    left: '0% 50%',
+    right: '100% 50%',
+    'top-left': '0% 0%',
+    'top-right': '100% 0%',
+    'bottom-left': '0% 100%',
+    'bottom-right': '100% 100%'
+  };
+
+  // Galleries are managed as data so Decap can add, remove, replace and
+  // reorder images without exposing the page HTML. The editorial tile shapes
+  // belong to each slot rather than each photo, so reordering automatically
+  // preserves the established mosaic rhythm.
+  const galleryConfigs = [
+    {
+      element: document.querySelector('[data-gallery="choreography"]'),
+      url: 'assets/data/choreography-gallery.json',
+      layout: ['wide', 'medium', 'third', 'third', 'third', 'medium', 'wide', 'third', 'third', 'third']
+    },
+    {
+      element: document.querySelector('[data-gallery="teaching"]'),
+      url: 'assets/data/teaching-gallery.json',
+      layout: ['wide', 'tall', 'medium', 'offset']
+    }
+  ].filter(config => config.element);
+
+  const galleryLayoutForCount = (pattern, count) => {
+    const spans = { wide: 7, medium: 5, third: 4, tall: 5, offset: 7, half: 6, full: 12 };
+    const classes = Array.from({ length: count }, (_, index) => pattern[index % pattern.length]);
+
+    // Keep complete rows exactly as designed. If add/remove leaves a partial
+    // final row, rebalance only that row so there is never an accidental gap.
+    let rowStart = 0;
+    let rowSpan = 0;
+    for (let index = 0; index < classes.length; index += 1) {
+      rowSpan += spans[classes[index]] || 12;
+      if (rowSpan === 12) {
+        rowStart = index + 1;
+        rowSpan = 0;
+      } else if (rowSpan > 12) {
+        rowStart = index;
+        rowSpan = spans[classes[index]] || 12;
+      }
+    }
+
+    if (rowSpan > 0) {
+      const remaining = classes.length - rowStart;
+      if (remaining === 1) classes[rowStart] = 'full';
+      else if (remaining === 2) classes.splice(rowStart, 2, 'half', 'half');
+      else if (remaining === 3) classes.splice(rowStart, 3, 'third', 'third', 'third');
+    }
+
+    return classes;
+  };
+
+  const renderGallery = config => fetch(config.url)
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => {
+      const items = Array.isArray(data) ? data : data.items;
+      if (!Array.isArray(items)) return;
+      const layout = galleryLayoutForCount(config.layout, items.length);
+
+      const buttons = items.map((item, index) => {
+        const button = document.createElement('button');
+        button.className = `gallery-item ${layout[index]}`;
+        button.type = 'button';
+
+        const image = document.createElement('img');
+        image.src = item.image;
+        image.alt = item.alt || '';
+        image.loading = 'lazy';
+        image.style.objectPosition = imagePositions[item.position] || imagePositions.center;
+
+        button.appendChild(image);
+        return button;
+      });
+
+      config.element.replaceChildren(...buttons);
+    })
+    // The original gallery HTML remains in the page as a resilient fallback.
+    .catch(() => {});
+
+  const galleriesReady = galleryConfigs.length
+    ? Promise.allSettled(galleryConfigs.map(renderGallery))
+    : Promise.resolve();
+
+  const setupLightbox = () => {
+    const lightbox = document.querySelector('.lightbox');
+    if (!lightbox) return;
+
     const lightboxImg = lightbox.querySelector('img');
     const closeButton = lightbox.querySelector('.lightbox-close');
     const galleryItems = [...document.querySelectorAll('.gallery-item')];
@@ -137,22 +229,12 @@
         }
       }
     });
-  }
+  };
+
+  galleriesReady.finally(setupLightbox);
 
   const igGrid = document.querySelector('[data-instagram-grid]');
   if (igGrid) {
-    const instagramPositions = {
-      center: '50% 50%',
-      top: '50% 0%',
-      bottom: '50% 100%',
-      left: '0% 50%',
-      right: '100% 50%',
-      'top-left': '0% 0%',
-      'top-right': '100% 0%',
-      'bottom-left': '0% 100%',
-      'bottom-right': '100% 100%'
-    };
-
     fetch('assets/data/instagram.json')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
@@ -173,7 +255,7 @@
           image.src = post.image;
           image.alt = post.alt || '';
           image.loading = 'lazy';
-          image.style.objectPosition = instagramPositions[post.position] || instagramPositions.center;
+          image.style.objectPosition = imagePositions[post.position] || imagePositions.center;
 
           card.appendChild(image);
           return card;
