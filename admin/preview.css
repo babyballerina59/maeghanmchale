@@ -18,12 +18,14 @@ html, body {
 
 body { padding: clamp(24px, 5vw, 64px); }
 
+/* Instagram preview */
 .ig-preview-shell {
   width: min(100%, 980px);
   margin: 0 auto;
 }
 
-.ig-preview-heading {
+.ig-preview-heading,
+.gallery-preview-heading {
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -31,7 +33,8 @@ body { padding: clamp(24px, 5vw, 64px); }
   margin-bottom: 28px;
 }
 
-.ig-preview-heading h1 {
+.ig-preview-heading h1,
+.gallery-preview-heading h1 {
   margin: 4px 0 0;
   color: var(--black);
   font-size: clamp(28px, 4vw, 48px);
@@ -40,14 +43,16 @@ body { padding: clamp(24px, 5vw, 64px); }
   letter-spacing: -0.035em;
 }
 
-.ig-preview-heading > span {
+.ig-preview-heading > span,
+.gallery-preview-heading > span {
   color: #777;
   font-size: 12px;
   letter-spacing: .12em;
   text-transform: uppercase;
 }
 
-.ig-preview-eyebrow {
+.ig-preview-eyebrow,
+.gallery-preview-eyebrow {
   margin: 0;
   color: var(--rose-deep);
   font-size: 11px;
@@ -69,14 +74,16 @@ body { padding: clamp(24px, 5vw, 64px); }
   background: var(--paper);
 }
 
-.ig-preview-card img {
+.ig-preview-card img,
+.gallery-preview-item img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.ig-preview-empty {
+.ig-preview-empty,
+.gallery-preview-empty {
   width: 100%;
   height: 100%;
   display: grid;
@@ -85,7 +92,8 @@ body { padding: clamp(24px, 5vw, 64px); }
   font-size: 13px;
 }
 
-.ig-preview-number {
+.ig-preview-number,
+.gallery-preview-number {
   position: absolute;
   left: 10px;
   bottom: 10px;
@@ -101,16 +109,83 @@ body { padding: clamp(24px, 5vw, 64px); }
   font-weight: 650;
 }
 
-.ig-preview-note {
+.ig-preview-note,
+.gallery-preview-note {
   margin: 18px 0 0;
-  max-width: 700px;
+  max-width: 760px;
   color: #666;
   font-size: 13px;
   line-height: 1.55;
 }
 
-@media (max-width: 680px) {
+/* Gallery previews mirror the live 12-column editorial mosaic. */
+.gallery-preview-shell {
+  width: min(100%, 1100px);
+  margin: 0 auto;
+  padding: clamp(22px, 4vw, 48px);
+}
+
+.gallery-preview-dark {
+  background: var(--black);
+  color: var(--white);
+}
+
+.gallery-preview-paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.gallery-preview-dark .gallery-preview-heading h1 { color: var(--white); }
+.gallery-preview-dark .gallery-preview-heading > span { color: #aaa; }
+.gallery-preview-dark .gallery-preview-note { color: #aaa; }
+.gallery-preview-dark .gallery-preview-eyebrow { color: var(--rose); }
+
+.gallery-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(7px, 1.4vw, 14px);
+}
+
+.gallery-preview-item {
+  position: relative;
+  overflow: hidden;
+  background: #ddd;
+}
+
+.gallery-preview-dark .gallery-preview-item { background: #111; }
+.gallery-preview-item.wide { grid-column: span 7; aspect-ratio: 1.55; }
+.gallery-preview-item.medium { grid-column: span 5; aspect-ratio: 1.15; }
+.gallery-preview-item.third { grid-column: span 4; aspect-ratio: 1.15; }
+.gallery-preview-item.tall { grid-column: span 5; aspect-ratio: .82; }
+.gallery-preview-item.offset { grid-column: span 7; aspect-ratio: 1.2; }
+.gallery-preview-item.half { grid-column: span 6; aspect-ratio: 1.15; }
+.gallery-preview-item.full { grid-column: span 12; aspect-ratio: 2.05; }
+
+@media (max-width: 780px) {
   body { padding: 20px; }
-  .ig-preview-heading { align-items: start; flex-direction: column; }
+  .ig-preview-heading,
+  .gallery-preview-heading { align-items: start; flex-direction: column; }
   .ig-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gallery-preview-item.wide,
+  .gallery-preview-item.medium,
+  .gallery-preview-item.third,
+  .gallery-preview-item.tall,
+  .gallery-preview-item.offset,
+  .gallery-preview-item.half {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 520px) {
+  .gallery-preview-item.wide,
+  .gallery-preview-item.medium,
+  .gallery-preview-item.third,
+  .gallery-preview-item.tall,
+  .gallery-preview-item.offset,
+  .gallery-preview-item.half,
+  .gallery-preview-item.full {
+    grid-column: span 12;
+    aspect-ratio: 1.2;
+  }
+  .gallery-preview-item.tall { aspect-ratio: .92; }
 }

@@ -1,4 +1,4 @@
-# Maeghan McHale — Curated Instagram CMS
+# Maeghan McHale CMS
 # Production configuration. GitHub authentication is handled by the
 # Cloudflare OAuth proxy below. Local testing remains available via decap-server.
 
@@ -10,12 +10,14 @@ backend:
   auth_endpoint: /auth
 
 # When `npx decap-server` is running locally, Decap writes to the local repo
-# instead of GitHub. This lets us test the editor before enabling live auth.
+# instead of GitHub. This lets us test changes without touching the live site.
 local_backend: true
 
 site_url: https://maeghanmchale.com
 display_url: https://maeghanmchale.com
 
+# Individual image fields below override these folders so each feature keeps
+# its uploads organized in its own directory.
 media_folder: "assets/img/instagram"
 public_folder: "assets/img/instagram"
 
@@ -93,6 +95,126 @@ collections:
                 hint: "Choose which part of the uncropped image stays visible inside the square homepage tile. The preview updates as you change this."
                 options:
                   - { label: "Center", value: "center" }
+                  - { label: "Top", value: "top" }
+                  - { label: "Bottom", value: "bottom" }
+                  - { label: "Left", value: "left" }
+                  - { label: "Right", value: "right" }
+                  - { label: "Top Left", value: "top-left" }
+                  - { label: "Top Right", value: "top-right" }
+                  - { label: "Bottom Left", value: "bottom-left" }
+                  - { label: "Bottom Right", value: "bottom-right" }
+
+  - label: "Galleries"
+    name: "galleries"
+    description: "Add, remove, replace and reorder images in the Choreography and Teaching galleries. The website automatically keeps the established editorial mosaic layout."
+    editor:
+      preview: true
+    files:
+      - label: "Choreography Gallery"
+        name: "choreography_gallery"
+        file: "assets/data/choreography-gallery.json"
+        fields:
+          - label: "Gallery Images"
+            label_singular: "Gallery Image"
+            name: "items"
+            widget: "list"
+            min: 1
+            allow_add: true
+            allow_remove: true
+            allow_reorder: true
+            collapsed: true
+            minimize_collapsed: false
+            summary: "{{fields.alt}}"
+            hint: "Add or remove images freely and drag them to change their order. Tile shapes are assigned automatically by position so the gallery keeps its existing editorial rhythm. Removing an item removes it from the website but intentionally does not delete the old image file from GitHub."
+            fields:
+              - label: "Image"
+                name: "image"
+                widget: "image"
+                choose_url: false
+                allow_multiple: false
+                media_folder: "/assets/img/choreography-gallery"
+                public_folder: "assets/img/choreography-gallery"
+                hint: "Upload a JPG, PNG or WebP. It is automatically converted to WebP, resized to 1200px wide while preserving its aspect ratio, and stripped of metadata. The source image is not physically cropped."
+                media_processing:
+                  enabled: true
+                  format:
+                    enabled: true
+                    default: webp
+                  quality: 82
+                  strip_metadata: true
+                  width: 1200
+                  height: null
+
+              - label: "Image Description"
+                name: "alt"
+                widget: "string"
+                hint: "Briefly describe what is visible in the image for visitors using screen readers."
+
+              - label: "Image Position"
+                name: "position"
+                widget: "select"
+                default: "center"
+                hint: "Adjust which part of the uncropped image remains most visible inside its gallery tile. The preview updates as you change this."
+                options:
+                  - { label: "Center", value: "center" }
+                  - { label: "Upper", value: "upper" }
+                  - { label: "Top", value: "top" }
+                  - { label: "Bottom", value: "bottom" }
+                  - { label: "Left", value: "left" }
+                  - { label: "Right", value: "right" }
+                  - { label: "Top Left", value: "top-left" }
+                  - { label: "Top Right", value: "top-right" }
+                  - { label: "Bottom Left", value: "bottom-left" }
+                  - { label: "Bottom Right", value: "bottom-right" }
+
+      - label: "Teaching Gallery"
+        name: "teaching_gallery"
+        file: "assets/data/teaching-gallery.json"
+        fields:
+          - label: "Gallery Images"
+            label_singular: "Gallery Image"
+            name: "items"
+            widget: "list"
+            min: 1
+            allow_add: true
+            allow_remove: true
+            allow_reorder: true
+            collapsed: true
+            minimize_collapsed: false
+            summary: "{{fields.alt}}"
+            hint: "Add or remove images freely and drag them to change their order. Tile shapes are assigned automatically by position so the gallery keeps its existing editorial rhythm. Removing an item removes it from the website but intentionally does not delete the old image file from GitHub."
+            fields:
+              - label: "Image"
+                name: "image"
+                widget: "image"
+                choose_url: false
+                allow_multiple: false
+                media_folder: "/assets/img/teaching-gallery"
+                public_folder: "assets/img/teaching-gallery"
+                hint: "Upload a JPG, PNG or WebP. It is automatically converted to WebP, resized to 1200px wide while preserving its aspect ratio, and stripped of metadata. The source image is not physically cropped."
+                media_processing:
+                  enabled: true
+                  format:
+                    enabled: true
+                    default: webp
+                  quality: 82
+                  strip_metadata: true
+                  width: 1200
+                  height: null
+
+              - label: "Image Description"
+                name: "alt"
+                widget: "string"
+                hint: "Briefly describe what is visible in the image for visitors using screen readers."
+
+              - label: "Image Position"
+                name: "position"
+                widget: "select"
+                default: "upper"
+                hint: "Adjust which part of the uncropped image remains most visible inside its gallery tile. The preview updates as you change this."
+                options:
+                  - { label: "Center", value: "center" }
+                  - { label: "Upper", value: "upper" }
                   - { label: "Top", value: "top" }
                   - { label: "Bottom", value: "bottom" }
                   - { label: "Left", value: "left" }
