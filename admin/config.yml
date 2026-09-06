@@ -125,7 +125,7 @@ collections:
             collapsed: true
             minimize_collapsed: false
             summary: "{{fields.alt}}"
-            hint: "Add or remove images freely and drag them to change their order. Tile shapes are assigned automatically by position so the gallery keeps its existing editorial rhythm. Removing an item removes it from the website but intentionally does not delete the old image file from GitHub."
+            hint: "Add or remove images freely and drag them to change their order. Tile shapes are assigned automatically by position so the gallery keeps its existing editorial rhythm. Removing an item removes it from the website but intentionally does not delete the old image file from GitHub. Existing gallery images live in the dedicated choreography-gallery and teaching-gallery folders, and new uploads are saved there too."
             fields:
               - label: "Image"
                 name: "image"
@@ -133,7 +133,7 @@ collections:
                 choose_url: false
                 allow_multiple: false
                 media_folder: "assets/img/choreography-gallery"
-                public_folder: "/assets/img/choreography-gallery"
+                public_folder: "assets/img/choreography-gallery"
                 hint: "Upload a JPG, PNG or WebP. It is automatically converted to WebP, resized to 1200px wide while preserving its aspect ratio, and stripped of metadata. The source image is not physically cropped."
                 media_processing:
                   enabled: true
@@ -182,7 +182,7 @@ collections:
             collapsed: true
             minimize_collapsed: false
             summary: "{{fields.alt}}"
-            hint: "Add or remove images freely and drag them to change their order. Tile shapes are assigned automatically by position so the gallery keeps its existing editorial rhythm. Removing an item removes it from the website but intentionally does not delete the old image file from GitHub."
+            hint: "Add or remove images freely and drag them to change their order. Tile shapes are assigned automatically by position so the gallery keeps its existing editorial rhythm. Removing an item removes it from the website but intentionally does not delete the old image file from GitHub. Existing gallery images live in the dedicated choreography-gallery and teaching-gallery folders, and new uploads are saved there too."
             fields:
               - label: "Image"
                 name: "image"
@@ -190,7 +190,7 @@ collections:
                 choose_url: false
                 allow_multiple: false
                 media_folder: "assets/img/teaching-gallery"
-                public_folder: "/assets/img/teaching-gallery"
+                public_folder: "assets/img/teaching-gallery"
                 hint: "Upload a JPG, PNG or WebP. It is automatically converted to WebP, resized to 1200px wide while preserving its aspect ratio, and stripped of metadata. The source image is not physically cropped."
                 media_processing:
                   enabled: true

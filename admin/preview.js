@@ -45,28 +45,38 @@
     return classes;
   }
 
-  function assetUrl(getAsset, path) {
+  function normalizeGalleryPath(type, source) {
+    const value = String(source || '').replace(/^\/+/, '');
+    if (!value) return '';
+    if (/^assets\/img\/(choreography-gallery|teaching-gallery|instagram)\//i.test(value)) return value;
+
+    const fileName = value.split('/').pop();
+    if (type === 'choreography') return `assets/img/choreography-gallery/${fileName}`;
+    if (type === 'teaching') return `assets/img/teaching-gallery/${fileName}`;
+    if (type === 'instagram') return `assets/img/instagram/${fileName}`;
+    return value;
+  }
+
+  function assetUrl(getAsset, path, type) {
     if (!path) return '';
+
+    const normalizedPath = normalizeGalleryPath(type, path);
 
     // Newly selected files exist only in Decap's in-memory media store until
     // they are published. getAsset() resolves those to a blob/data URL, which
     // is exactly what the preview needs.
-    const asset = getAsset(path);
-    const resolved = asset && typeof asset.toString === 'function'
-      ? asset.toString()
-      : String(asset || '');
+    const asset = getAsset(normalizedPath) || getAsset(path);
+    const resolved = asset
+      ? (typeof asset.toString === 'function' ? asset.toString() : '') || asset.url || asset.path || asset._path || asset._url || String(asset || '')
+      : '';
     if (/^(blob:|data:)/i.test(resolved)) return resolved;
 
-    // Existing gallery JSON predates the dedicated CMS upload folders and
-    // points at assets already served from the site's /assets tree. Resolve
-    // those paths from the site root instead of asking the field-specific
-    // media folder to reinterpret them. This works on both the live site and
-    // localhost.
-    const source = String(path);
-    if (/^\/?assets\//i.test(source)) return `/${source.replace(/^\/+/, '')}`;
+    // Existing published assets should resolve from the site root.
+    if (/^\/?assets\//i.test(normalizedPath)) return `/${normalizedPath.replace(/^\/+/, '')}`;
+    if (/^\/?assets\//i.test(String(path))) return `/${String(path).replace(/^\/+/, '')}`;
 
     // Fallback for any future asset shape Decap can resolve itself.
-    return resolved || source;
+    return resolved || normalizedPath || String(path);
   }
 
   function immutableListToArray(list) {
@@ -93,7 +103,7 @@
             return h('div', { className: 'ig-preview-card', key: index },
               image
                 ? h('img', {
-                    src: assetUrl(this.props.getAsset, image),
+                    src: assetUrl(this.props.getAsset, image, 'instagram'),
                     alt: alt,
                     style: { objectPosition: positionMap[position] || positionMap.center }
                   })
@@ -130,7 +140,7 @@
               return h('div', { className: `gallery-preview-item ${tileClass}`, key: index },
                 image
                   ? h('img', {
-                      src: assetUrl(this.props.getAsset, image),
+                      src: assetUrl(this.props.getAsset, image, type),
                       alt: alt,
                       style: { objectPosition: positionMap[position] || positionMap.center }
                     })
