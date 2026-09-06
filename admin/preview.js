@@ -79,6 +79,12 @@
     return resolved || normalizedPath || String(path);
   }
 
+  function directAssetUrl(getAsset, path) {
+    if (!path) return '';
+    const asset = getAsset(path);
+    return asset && typeof asset.toString === 'function' ? asset.toString() : String(asset || path);
+  }
+
   function immutableListToArray(list) {
     return list && typeof list.toArray === 'function' ? list.toArray() : [];
   }
@@ -140,7 +146,7 @@
               return h('div', { className: `gallery-preview-item ${tileClass}`, key: index },
                 image
                   ? h('img', {
-                      src: assetUrl(this.props.getAsset, image, type),
+                      src: directAssetUrl(this.props.getAsset, image),
                       alt: alt,
                       style: { objectPosition: positionMap[position] || positionMap.center }
                     })
