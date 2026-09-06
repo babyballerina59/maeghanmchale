@@ -1,22 +1,22 @@
 {
   "items": [
     {
-      "image": "assets/img/teaching-coaching.webp",
+      "image": "assets/img/teaching-gallery/teaching-coaching.webp",
       "alt": "Maeghan McHale coaching dancers at the barre",
       "position": "upper"
     },
     {
-      "image": "assets/img/teaching-demonstration.webp",
+      "image": "assets/img/teaching-gallery/teaching-demonstration.webp",
       "alt": "Maeghan McHale demonstrating movement to a dancer",
       "position": "top"
     },
     {
-      "image": "assets/img/teaching-barre.webp",
+      "image": "assets/img/teaching-gallery/teaching-barre.webp",
       "alt": "Maeghan McHale giving individual notes to a dancer at the barre",
       "position": "upper"
     },
     {
-      "image": "assets/img/teaching-hands-on.webp",
+      "image": "assets/img/teaching-gallery/teaching-hands-on.webp",
       "alt": "Maeghan McHale giving hands-on coaching in the studio",
       "position": "upper"
     }
