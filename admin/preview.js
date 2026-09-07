@@ -79,10 +79,26 @@
     return resolved || normalizedPath || String(path);
   }
 
-  function directAssetUrl(getAsset, path) {
+  function galleryAssetUrl(getAsset, path, field) {
     if (!path) return '';
-    const asset = getAsset(path);
-    return asset && typeof asset.toString === 'function' ? asset.toString() : String(asset || path);
+
+    // Decap's internal getAsset API accepts the field definition as its second
+    // argument. That context matters here because each gallery image field has
+    // its own media_folder/public_folder. It also lets Decap return the
+    // in-memory blob URL for a newly selected image before it is published.
+    const asset = field ? getAsset(path, field) : getAsset(path);
+    const resolved = asset && typeof asset.toString === 'function'
+      ? asset.toString()
+      : String(asset || '');
+
+    if (resolved && !/empty\.svg(?:$|[?#])/i.test(resolved)) return resolved;
+
+    // Safe fallback for already-published gallery images. A new draft image
+    // will be replaced by its blob URL as soon as Decap's asset store resolves
+    // it, while existing images remain visible immediately.
+    const source = String(path);
+    if (/^\/?assets\//i.test(source)) return `/${source.replace(/^\/+/, '')}`;
+    return resolved || source;
   }
 
   function immutableListToArray(list) {
@@ -127,6 +143,7 @@
     return createClass({
       render: function () {
         const items = immutableListToArray(this.props.entry.getIn(['data', 'items']));
+        const widgetItems = this.props.widgetsFor('items');
         const layout = galleryLayoutForCount(galleryLayouts[type], items.length);
 
         return h('main', { className: `gallery-preview-shell ${surfaceClass}` },
@@ -143,10 +160,18 @@
               const alt = item.get('alt') || '';
               const position = item.get('position') || (type === 'teaching' ? 'upper' : 'center');
               const tileClass = layout[index % layout.length];
+              const widgetItem = widgetItems && typeof widgetItems.get === 'function'
+                ? widgetItems.get(index)
+                : null;
+              const imageWidget = widgetItem && typeof widgetItem.getIn === 'function'
+                ? widgetItem.getIn(['widgets', 'image'])
+                : null;
+              const imageField = imageWidget && imageWidget.props ? imageWidget.props.field : null;
+
               return h('div', { className: `gallery-preview-item ${tileClass}`, key: index },
                 image
                   ? h('img', {
-                      src: directAssetUrl(this.props.getAsset, image),
+                      src: galleryAssetUrl(this.props.getAsset, image, imageField),
                       alt: alt,
                       style: { objectPosition: positionMap[position] || positionMap.center }
                     })
