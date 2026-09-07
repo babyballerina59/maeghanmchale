@@ -31,7 +31,7 @@ media_processing:
     default: webp
   quality: 82
   strip_metadata: true
-  width: 
+  width: 1200
   height: null
 
 collections:
