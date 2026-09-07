@@ -74,12 +74,38 @@ body { padding: clamp(24px, 5vw, 64px); }
   background: var(--paper);
 }
 
-.ig-preview-card img,
-.gallery-preview-item img {
+.ig-preview-card img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/*
+ * Decap's nested image preview component brings its own intrinsic image sizing.
+ * The gallery tile, not Decap's widget, owns the crop geometry. Put the widget
+ * inside an absolute media layer and force only its descendant <img> to fill
+ * that layer. This keeps the same aspect-ratio + object-fit model as the live
+ * .gallery-item, while still letting Decap resolve unpublished in-memory assets.
+ */
+.gallery-preview-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.gallery-preview-media img {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  object-fit: cover !important;
 }
 
 /* Gallery focal-position controls apply to Decap's own nested image preview. */
@@ -155,7 +181,7 @@ body { padding: clamp(24px, 5vw, 64px); }
 .gallery-preview-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: clamp(7px, 1.4vw, 14px);
+  gap: clamp(.7rem, 1.4vw, 1.3rem);
 }
 
 .gallery-preview-item {
@@ -173,22 +199,27 @@ body { padding: clamp(24px, 5vw, 64px); }
 .gallery-preview-item.half { grid-column: span 6; aspect-ratio: 1.15; }
 .gallery-preview-item.full { grid-column: span 12; aspect-ratio: 2.05; }
 
+/* Match the live gallery breakpoints exactly. */
+@media (max-width: 980px) {
+  .gallery-preview-item.wide,
+  .gallery-preview-item.medium,
+  .gallery-preview-item.tall,
+  .gallery-preview-item.offset,
+  .gallery-preview-item.half,
+  .gallery-preview-item.third {
+    grid-column: span 6;
+  }
+}
+
 @media (max-width: 780px) {
   body { padding: 20px; }
   .ig-preview-heading,
   .gallery-preview-heading { align-items: start; flex-direction: column; }
   .ig-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .gallery-preview-item.wide,
-  .gallery-preview-item.medium,
-  .gallery-preview-item.third,
-  .gallery-preview-item.tall,
-  .gallery-preview-item.offset,
-  .gallery-preview-item.half {
-    grid-column: span 6;
-  }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 680px) {
+  .gallery-preview-grid { gap: .45rem; }
   .gallery-preview-item.wide,
   .gallery-preview-item.medium,
   .gallery-preview-item.third,

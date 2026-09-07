@@ -153,10 +153,12 @@
                   key: index
                 },
                 image
-                  ? (imageWidget || h('img', {
-                      src: `/${String(image).replace(/^\/+/, '')}`,
-                      alt: item.get('alt') || ''
-                    }))
+                  ? h('div', { className: 'gallery-preview-media' },
+                      imageWidget || h('img', {
+                        src: `/${String(image).replace(/^\/+/, '')}`,
+                        alt: item.get('alt') || ''
+                      })
+                    )
                   : h('div', { className: 'gallery-preview-empty' }, 'Choose an image'),
                 h('span', { className: 'gallery-preview-number' }, String(index + 1))
               );
