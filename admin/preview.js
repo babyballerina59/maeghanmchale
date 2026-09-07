@@ -83,94 +83,6 @@
     return list && typeof list.toArray === 'function' ? list.toArray() : [];
   }
 
-  const galleryObjectUrls = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
-
-  function objectUrlFor(value) {
-    if (typeof Blob === 'undefined' || !(value instanceof Blob)) return '';
-    if (galleryObjectUrls && galleryObjectUrls.has(value)) return galleryObjectUrls.get(value);
-    const url = URL.createObjectURL(value);
-    if (galleryObjectUrls) galleryObjectUrls.set(value, url);
-    return url;
-  }
-
-  function usableAssetString(value) {
-    if (!value) return '';
-
-    const objectUrl = objectUrlFor(value);
-    if (objectUrl) return objectUrl;
-
-    const candidates = [];
-    if (typeof value === 'string') candidates.push(value);
-    if (value && typeof value === 'object') {
-      for (const key of ['url', '_url', 'path', '_path']) {
-        if (typeof value[key] === 'string') candidates.push(value[key]);
-      }
-    }
-    if (value && typeof value.toString === 'function') {
-      try {
-        const text = value.toString();
-        if (text && text !== '[object Object]') candidates.push(text);
-      } catch (_) {}
-    }
-
-    for (const candidate of candidates) {
-      const text = String(candidate || '');
-      if (!text) continue;
-
-      // Decap preview regressions have produced URLs with a valid blob/data URL
-      // incorrectly prefixed by the site path. Recover the actual in-memory URL.
-      const blobIndex = text.indexOf('blob:');
-      if (blobIndex >= 0) return text.slice(blobIndex);
-      const dataIndex = text.indexOf('data:');
-      if (dataIndex >= 0) return text.slice(dataIndex);
-
-      if (/^https?:\/\//i.test(text)) return text;
-      if (/^\/?assets\//i.test(text)) return `/${text.replace(/^\/+/, '')}`;
-    }
-
-    return '';
-  }
-
-  function galleryImageSource(imageWidget, entryValue, parentGetAsset) {
-    const props = imageWidget && imageWidget.props ? imageWidget.props : null;
-    const widgetValue = props && props.value != null ? props.value : entryValue;
-    const field = props && props.field ? props.field : undefined;
-
-    // A freshly chosen file may be handed directly to the widget before it has
-    // a repository path. This bypasses all path handling and previews the File.
-    let resolved = usableAssetString(widgetValue);
-    if (/^(blob:|data:)/i.test(resolved)) return resolved;
-
-    // The built-in image preview receives getAsset(value, field). Using the same
-    // value + field context is essential for field-level gallery media folders.
-    const attempts = [
-      () => props && typeof props.getAsset === 'function' ? props.getAsset(widgetValue, field) : null,
-      () => typeof parentGetAsset === 'function' ? parentGetAsset(widgetValue, field) : null,
-      () => props && typeof props.getAsset === 'function' ? props.getAsset(entryValue, field) : null,
-      () => typeof parentGetAsset === 'function' ? parentGetAsset(entryValue, field) : null,
-      () => typeof parentGetAsset === 'function' ? parentGetAsset(entryValue) : null,
-    ];
-
-    let publishedFallback = '';
-    for (const attempt of attempts) {
-      try {
-        const candidate = usableAssetString(attempt());
-        if (!candidate) continue;
-        if (/^(blob:|data:)/i.test(candidate)) return candidate;
-        if (!publishedFallback) publishedFallback = candidate;
-      } catch (_) {}
-    }
-
-    if (publishedFallback) return publishedFallback;
-
-    // Existing gallery entries are saved as public paths such as
-    // assets/img/teaching-gallery/foo.webp. Resolve those from the site root.
-    const entryFallback = usableAssetString(entryValue);
-    if (entryFallback) return entryFallback;
-
-    return usableAssetString(widgetValue);
-  }
-
   const InstagramPreview = createClass({
     render: function () {
       const items = immutableListToArray(this.props.entry.getIn(['data', 'posts']));
@@ -226,42 +138,30 @@
               const alt = item.get('alt') || '';
               const position = item.get('position') || (type === 'teaching' ? 'upper' : 'center');
               const tileClass = layout[index % layout.length];
+
               const widgetItem = widgetItems && typeof widgetItems.get === 'function'
                 ? widgetItems.get(index)
                 : (widgetItems && widgetItems[index]) || null;
               const imageWidget = widgetItem && typeof widgetItem.getIn === 'function'
                 ? widgetItem.getIn(['widgets', 'image'])
                 : null;
-              const src = image ? galleryImageSource(imageWidget, image, this.props.getAsset) : '';
 
+              // Decap's own nested ImagePreview already knows how to resolve both
+              // published assets and freshly selected File objects. We render that
+              // preview component only as the image source renderer, then flatten
+              // its presentation wrapper in preview.css so the gallery tile owns
+              // all crop geometry and focal positioning.
               return h('div', {
-                  className: `gallery-preview-item ${tileClass}`,
-                  key: index,
-                  style: { position: 'relative', overflow: 'hidden' }
+                  className: `gallery-preview-item ${tileClass} position-${position}`,
+                  key: index
                 },
                 image
-                  ? (src
-                      ? h('img', {
-                          src: src,
-                          alt: alt,
-                          style: {
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                            left: 0,
-                            display: 'block',
-                            width: '100%',
-                            height: '100%',
-                            maxWidth: 'none',
-                            maxHeight: 'none',
-                            margin: 0,
-                            padding: 0,
-                            objectFit: 'cover',
-                            objectPosition: positionMap[position] || positionMap.center
-                          }
-                        })
-                      : h('div', { className: 'gallery-preview-error' }, 'Image preview unavailable'))
+                  ? h('div', { className: 'gallery-native-preview' },
+                      imageWidget || h('img', {
+                        src: `/${String(image).replace(/^\/+/, '')}`,
+                        alt: alt
+                      })
+                    )
                   : h('div', { className: 'gallery-preview-empty' }, 'Choose an image'),
                 h('span', { className: 'gallery-preview-number' }, String(index + 1))
               );

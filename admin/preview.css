@@ -189,3 +189,47 @@ body { padding: clamp(24px, 5vw, 64px); }
   }
   .gallery-preview-item.tall { aspect-ratio: .92; }
 }
+
+/*
+ * Gallery preview image rendering
+ * -------------------------------
+ * Decap's built-in nested image preview is retained because it resolves both
+ * repository assets and newly selected, unpublished File objects. Its own
+ * WidgetPreviewContainer is presentation-only here, so all non-image wrapper
+ * boxes are flattened and the actual <img> is forced to fill the mosaic tile.
+ */
+.gallery-native-preview {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.gallery-native-preview *:not(img) {
+  display: contents !important;
+}
+
+.gallery-native-preview img {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  object-fit: cover !important;
+}
+
+.gallery-preview-item.position-center .gallery-native-preview img { object-position: 50% 50% !important; }
+.gallery-preview-item.position-upper .gallery-native-preview img { object-position: 50% 18% !important; }
+.gallery-preview-item.position-top .gallery-native-preview img { object-position: 50% 0% !important; }
+.gallery-preview-item.position-bottom .gallery-native-preview img { object-position: 50% 100% !important; }
+.gallery-preview-item.position-left .gallery-native-preview img { object-position: 0% 50% !important; }
+.gallery-preview-item.position-right .gallery-native-preview img { object-position: 100% 50% !important; }
+.gallery-preview-item.position-top-left .gallery-native-preview img { object-position: 0% 0% !important; }
+.gallery-preview-item.position-top-right .gallery-native-preview img { object-position: 100% 0% !important; }
+.gallery-preview-item.position-bottom-left .gallery-native-preview img { object-position: 0% 100% !important; }
+.gallery-preview-item.position-bottom-right .gallery-native-preview img { object-position: 100% 100% !important; }
+
