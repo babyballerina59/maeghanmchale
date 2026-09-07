@@ -81,44 +81,42 @@ body { padding: clamp(24px, 5vw, 64px); }
   object-fit: cover;
 }
 
-/*
- * Decap's nested image preview component brings its own intrinsic image sizing.
- * The gallery tile, not Decap's widget, owns the crop geometry. Put the widget
- * inside an absolute media layer and force only its descendant <img> to fill
- * that layer. This keeps the same aspect-ratio + object-fit model as the live
- * .gallery-item, while still letting Decap resolve unpublished in-memory assets.
- */
+/* Gallery preview images use a custom preview for the image field.
+ * The editor control is still Decap's built-in image control, but the preview
+ * itself is one plain <img>, matching the rendering model used by Instagram. */
 .gallery-preview-media {
   position: absolute;
   inset: 0;
   overflow: hidden;
 }
 
-.gallery-preview-media img {
-  position: absolute !important;
-  inset: 0 !important;
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  object-fit: cover !important;
+.gallery-preview-media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* Gallery focal-position controls apply to Decap's own nested image preview. */
-.gallery-preview-item.position-center img { object-position: 50% 50% !important; }
-.gallery-preview-item.position-upper img { object-position: 50% 18% !important; }
-.gallery-preview-item.position-top img { object-position: 50% 0% !important; }
-.gallery-preview-item.position-bottom img { object-position: 50% 100% !important; }
-.gallery-preview-item.position-left img { object-position: 0% 50% !important; }
-.gallery-preview-item.position-right img { object-position: 100% 50% !important; }
-.gallery-preview-item.position-top-left img { object-position: 0% 0% !important; }
-.gallery-preview-item.position-top-right img { object-position: 100% 0% !important; }
-.gallery-preview-item.position-bottom-left img { object-position: 0% 100% !important; }
-.gallery-preview-item.position-bottom-right img { object-position: 100% 100% !important; }
+.gallery-preview-item.position-center .gallery-preview-media > img { object-position: 50% 50%; }
+.gallery-preview-item.position-upper .gallery-preview-media > img { object-position: 50% 18%; }
+.gallery-preview-item.position-top .gallery-preview-media > img { object-position: 50% 0%; }
+.gallery-preview-item.position-bottom .gallery-preview-media > img { object-position: 50% 100%; }
+.gallery-preview-item.position-left .gallery-preview-media > img { object-position: 0% 50%; }
+.gallery-preview-item.position-right .gallery-preview-media > img { object-position: 100% 50%; }
+.gallery-preview-item.position-top-left .gallery-preview-media > img { object-position: 0% 0%; }
+.gallery-preview-item.position-top-right .gallery-preview-media > img { object-position: 100% 0%; }
+.gallery-preview-item.position-bottom-left .gallery-preview-media > img { object-position: 0% 100%; }
+.gallery-preview-item.position-bottom-right .gallery-preview-media > img { object-position: 100% 100%; }
+
+.gallery-preview-error {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #8a2d20;
+  background: #f6e6e2;
+  font-size: 13px;
+}
 
 .ig-preview-empty,
 .gallery-preview-empty {
