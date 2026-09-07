@@ -79,28 +79,6 @@
     return resolved || normalizedPath || String(path);
   }
 
-  function galleryAssetUrl(getAsset, path, field) {
-    if (!path) return '';
-
-    // Decap's internal getAsset API accepts the field definition as its second
-    // argument. That context matters here because each gallery image field has
-    // its own media_folder/public_folder. It also lets Decap return the
-    // in-memory blob URL for a newly selected image before it is published.
-    const asset = field ? getAsset(path, field) : getAsset(path);
-    const resolved = asset && typeof asset.toString === 'function'
-      ? asset.toString()
-      : String(asset || '');
-
-    if (resolved && !/empty\.svg(?:$|[?#])/i.test(resolved)) return resolved;
-
-    // Safe fallback for already-published gallery images. A new draft image
-    // will be replaced by its blob URL as soon as Decap's asset store resolves
-    // it, while existing images remain visible immediately.
-    const source = String(path);
-    if (/^\/?assets\//i.test(source)) return `/${source.replace(/^\/+/, '')}`;
-    return resolved || source;
-  }
-
   function immutableListToArray(list) {
     return list && typeof list.toArray === 'function' ? list.toArray() : [];
   }
@@ -157,24 +135,28 @@
           h('div', { className: 'gallery-preview-grid' },
             items.map((item, index) => {
               const image = item.get('image');
-              const alt = item.get('alt') || '';
               const position = item.get('position') || (type === 'teaching' ? 'upper' : 'center');
               const tileClass = layout[index % layout.length];
               const widgetItem = widgetItems && typeof widgetItems.get === 'function'
                 ? widgetItems.get(index)
-                : null;
+                : (widgetItems && widgetItems[index]) || null;
               const imageWidget = widgetItem && typeof widgetItem.getIn === 'function'
                 ? widgetItem.getIn(['widgets', 'image'])
                 : null;
-              const imageField = imageWidget && imageWidget.props ? imageWidget.props.field : null;
 
-              return h('div', { className: `gallery-preview-item ${tileClass}`, key: index },
+              // Decap's documented widgetsFor() API supplies the nested image
+              // preview component. Rendering that component directly lets Decap
+              // resolve both published files and not-yet-published in-memory
+              // uploads using the image field's own media_folder configuration.
+              return h('div', {
+                  className: `gallery-preview-item ${tileClass} position-${position}`,
+                  key: index
+                },
                 image
-                  ? h('img', {
-                      src: galleryAssetUrl(this.props.getAsset, image, imageField),
-                      alt: alt,
-                      style: { objectPosition: positionMap[position] || positionMap.center }
-                    })
+                  ? (imageWidget || h('img', {
+                      src: `/${String(image).replace(/^\/+/, '')}`,
+                      alt: item.get('alt') || ''
+                    }))
                   : h('div', { className: 'gallery-preview-empty' }, 'Choose an image'),
                 h('span', { className: 'gallery-preview-number' }, String(index + 1))
               );

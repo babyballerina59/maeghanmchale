@@ -82,6 +82,18 @@ body { padding: clamp(24px, 5vw, 64px); }
   object-fit: cover;
 }
 
+/* Gallery focal-position controls apply to Decap's own nested image preview. */
+.gallery-preview-item.position-center img { object-position: 50% 50% !important; }
+.gallery-preview-item.position-upper img { object-position: 50% 18% !important; }
+.gallery-preview-item.position-top img { object-position: 50% 0% !important; }
+.gallery-preview-item.position-bottom img { object-position: 50% 100% !important; }
+.gallery-preview-item.position-left img { object-position: 0% 50% !important; }
+.gallery-preview-item.position-right img { object-position: 100% 50% !important; }
+.gallery-preview-item.position-top-left img { object-position: 0% 0% !important; }
+.gallery-preview-item.position-top-right img { object-position: 100% 0% !important; }
+.gallery-preview-item.position-bottom-left img { object-position: 0% 100% !important; }
+.gallery-preview-item.position-bottom-right img { object-position: 100% 100% !important; }
+
 .ig-preview-empty,
 .gallery-preview-empty {
   width: 100%;
