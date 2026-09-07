@@ -83,29 +83,6 @@
     return list && typeof list.toArray === 'function' ? list.toArray() : [];
   }
 
-  // Reuse Decap's built-in image CONTROL, but replace only its preview.
-  // Decap's own ImagePreview resolves assets this same way: a newly selected
-  // File becomes a temporary object URL; an existing value is resolved with
-  // getAsset(value, field), preserving this field's media/public folder context.
-  // Returning a plain <img> keeps the gallery crop geometry fully under our CSS.
-  const GalleryImagePreview = createClass({
-    render: function () {
-      const value = this.props.value;
-      if (!value) return null;
-
-      const src = value instanceof File
-        ? URL.createObjectURL(value)
-        : this.props.getAsset(value, this.props.field);
-
-      return h('img', {
-        src: src || '',
-        role: 'presentation'
-      });
-    }
-  });
-
-  CMS.registerWidget('gallery-image', 'image', GalleryImagePreview);
-
   const InstagramPreview = createClass({
     render: function () {
       const items = immutableListToArray(this.props.entry.getIn(['data', 'posts']));
@@ -144,7 +121,6 @@
     return createClass({
       render: function () {
         const items = immutableListToArray(this.props.entry.getIn(['data', 'items']));
-        const widgetItems = this.props.widgetsFor('items');
         const layout = galleryLayoutForCount(galleryLayouts[type], items.length);
 
         return h('main', { className: `gallery-preview-shell ${surfaceClass}` },
@@ -158,26 +134,16 @@
           h('div', { className: 'gallery-preview-grid' },
             items.map((item, index) => {
               const image = item.get('image');
+              const alt = item.get('alt') || '';
               const position = item.get('position') || (type === 'teaching' ? 'upper' : 'center');
               const tileClass = layout[index % layout.length];
-              const widgetItem = widgetItems && typeof widgetItems.get === 'function'
-                ? widgetItems.get(index)
-                : (widgetItems && widgetItems[index]) || null;
-              const imageWidget = widgetItem && typeof widgetItem.getIn === 'function'
-                ? widgetItem.getIn(['widgets', 'image'])
-                : null;
-
-              // widgetsFor() supplies the nested gallery-image preview element.
-              // gallery-image is our plain <img> preview registered above, while
-              // its editor control remains Decap's normal built-in image control.
-              return h('div', {
-                  className: `gallery-preview-item ${tileClass} position-${position}`,
-                  key: index
-                },
+              return h('div', { className: `gallery-preview-item ${tileClass}`, key: index },
                 image
-                  ? h('div', { className: 'gallery-preview-media' },
-                      imageWidget || h('div', { className: 'gallery-preview-error' }, 'Image preview unavailable')
-                    )
+                  ? h('img', {
+                      src: assetUrl(this.props.getAsset, image, type),
+                      alt: alt,
+                      style: { objectPosition: positionMap[position] || positionMap.center }
+                    })
                   : h('div', { className: 'gallery-preview-empty' }, 'Choose an image'),
                 h('span', { className: 'gallery-preview-number' }, String(index + 1))
               );

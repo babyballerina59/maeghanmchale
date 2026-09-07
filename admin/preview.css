@@ -74,48 +74,12 @@ body { padding: clamp(24px, 5vw, 64px); }
   background: var(--paper);
 }
 
-.ig-preview-card img {
+.ig-preview-card img,
+.gallery-preview-item img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* Gallery preview images use a custom preview for the image field.
- * The editor control is still Decap's built-in image control, but the preview
- * itself is one plain <img>, matching the rendering model used by Instagram. */
-.gallery-preview-media {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.gallery-preview-media > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.gallery-preview-item.position-center .gallery-preview-media > img { object-position: 50% 50%; }
-.gallery-preview-item.position-upper .gallery-preview-media > img { object-position: 50% 18%; }
-.gallery-preview-item.position-top .gallery-preview-media > img { object-position: 50% 0%; }
-.gallery-preview-item.position-bottom .gallery-preview-media > img { object-position: 50% 100%; }
-.gallery-preview-item.position-left .gallery-preview-media > img { object-position: 0% 50%; }
-.gallery-preview-item.position-right .gallery-preview-media > img { object-position: 100% 50%; }
-.gallery-preview-item.position-top-left .gallery-preview-media > img { object-position: 0% 0%; }
-.gallery-preview-item.position-top-right .gallery-preview-media > img { object-position: 100% 0%; }
-.gallery-preview-item.position-bottom-left .gallery-preview-media > img { object-position: 0% 100%; }
-.gallery-preview-item.position-bottom-right .gallery-preview-media > img { object-position: 100% 100%; }
-
-.gallery-preview-error {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  color: #8a2d20;
-  background: #f6e6e2;
-  font-size: 13px;
 }
 
 .ig-preview-empty,
@@ -179,7 +143,7 @@ body { padding: clamp(24px, 5vw, 64px); }
 .gallery-preview-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: clamp(.7rem, 1.4vw, 1.3rem);
+  gap: clamp(7px, 1.4vw, 14px);
 }
 
 .gallery-preview-item {
@@ -197,27 +161,22 @@ body { padding: clamp(24px, 5vw, 64px); }
 .gallery-preview-item.half { grid-column: span 6; aspect-ratio: 1.15; }
 .gallery-preview-item.full { grid-column: span 12; aspect-ratio: 2.05; }
 
-/* Match the live gallery breakpoints exactly. */
-@media (max-width: 980px) {
-  .gallery-preview-item.wide,
-  .gallery-preview-item.medium,
-  .gallery-preview-item.tall,
-  .gallery-preview-item.offset,
-  .gallery-preview-item.half,
-  .gallery-preview-item.third {
-    grid-column: span 6;
-  }
-}
-
 @media (max-width: 780px) {
   body { padding: 20px; }
   .ig-preview-heading,
   .gallery-preview-heading { align-items: start; flex-direction: column; }
   .ig-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gallery-preview-item.wide,
+  .gallery-preview-item.medium,
+  .gallery-preview-item.third,
+  .gallery-preview-item.tall,
+  .gallery-preview-item.offset,
+  .gallery-preview-item.half {
+    grid-column: span 6;
+  }
 }
 
-@media (max-width: 680px) {
-  .gallery-preview-grid { gap: .45rem; }
+@media (max-width: 520px) {
   .gallery-preview-item.wide,
   .gallery-preview-item.medium,
   .gallery-preview-item.third,
