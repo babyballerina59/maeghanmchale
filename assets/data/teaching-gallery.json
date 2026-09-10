@@ -34,6 +34,11 @@
       "position": "bottom",
       "image": "assets/img/teaching-gallery/img_2201.webp",
       "alt": "Teaching - AMB School Contemporary Class "
+    },
+    {
+      "position": "right",
+      "image": "assets/img/teaching-gallery/img_2202.webp",
+      "alt": "AMB School Contemporary Class "
     }
   ]
 }
